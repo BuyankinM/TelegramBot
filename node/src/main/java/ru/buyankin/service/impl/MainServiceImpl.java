@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.buyankin.dao.AppUserDAO;
 import ru.buyankin.dao.RawDataDAO;
 import ru.buyankin.entity.AppDocument;
+import ru.buyankin.entity.AppPhoto;
 import ru.buyankin.entity.AppUser;
 import ru.buyankin.entity.RawData;
 import ru.buyankin.entity.enums.UserState;
@@ -95,9 +96,17 @@ public class MainServiceImpl implements MainService {
             return;
         }
 
-        //TODO добавить сохранение фото
-        var answer = "Фото успешно загружено! Ссылка для скачивания: http://test.ru/get-foto/777";
-        sendAnswer(answer, chatId);
+        try {
+            AppPhoto photo = fileService.processPhoto(update.getMessage());
+            //TODO добавить генерацию ссылки для скачивания
+            var answer = "Фото успешно загружено! Ссылка для скачивания: http://test.ru/get-foto/777";
+            sendAnswer(answer, chatId);
+        } catch (UploadFileException ex) {
+            log.error(ex);
+            String error = "К сожалению, загрузка фото не удалась. Повторите попытку позже.";
+            sendAnswer(error, chatId);
+        }
+
     }
 
     private boolean isNotAllowToSendContent(Long chatId, AppUser appUser) {
