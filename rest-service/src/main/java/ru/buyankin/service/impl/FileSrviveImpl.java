@@ -11,6 +11,7 @@ import ru.buyankin.entity.AppDocument;
 import ru.buyankin.entity.AppPhoto;
 import ru.buyankin.entity.BinaryContent;
 import ru.buyankin.service.FileService;
+import ru.buyankin.utils.CryptoTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,25 +22,31 @@ public class FileSrviveImpl implements FileService {
 
     private final AppDocumentDAO appDocumentDAO;
     private final AppPhotoDAO appPhotoDAO;
+    private final CryptoTool cryptoTool;
 
     @Autowired
-    public FileSrviveImpl(AppDocumentDAO appDocumentDAO, AppPhotoDAO appPhotoDAO) {
+    public FileSrviveImpl(AppDocumentDAO appDocumentDAO, AppPhotoDAO appPhotoDAO, CryptoTool cryptoTool) {
         this.appDocumentDAO = appDocumentDAO;
         this.appPhotoDAO = appPhotoDAO;
+        this.cryptoTool = cryptoTool;
     }
 
 
     @Override
     public AppDocument getDocument(String docId) {
-        //TODO добавить дешифрование хэш-строки
-        var id = Long.parseLong(docId);
+        var id = cryptoTool.idOf(docId);
+        if (id == null) {
+            return null;
+        }
         return appDocumentDAO.findById(id).orElse(null);
     }
 
     @Override
     public AppPhoto getPhoto(String photoId) {
-        //TODO добавить дешифрование хэш-строки
-        var id = Long.parseLong(photoId);
+        var id = cryptoTool.idOf(photoId);
+        if (id == null) {
+            return null;
+        }
         return appPhotoDAO.findById(id).orElse(null);
     }
 

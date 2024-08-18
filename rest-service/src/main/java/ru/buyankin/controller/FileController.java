@@ -40,7 +40,7 @@ public class FileController {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType(doc.getMimeType()))
-                .header("Content-Disposition", "attachment; filename=" + doc.getDocName())
+                .header("Content-disposition", "attachment; filename=" + doc.getDocName())
                 .body(fileSystemResource);
 
     }
